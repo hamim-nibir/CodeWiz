@@ -1,95 +1,104 @@
 <?php
-// 1. Connect to the database
-$servername = "localhost"; // or your server name
-$username = "root";        // your database username
-$password = "";            // your database password
-$dbname = "codewiz"; // your database name
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+require_once 'dbconnection.php';
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// fetching problems from problems table
+$query = "SELECT * FROM problems";
+$filters = [];
+
+// Difficulty search
+if (!empty($_GET['difficulty'])) {
+    $difficulty = $conn->real_escape_string($_GET['difficulty']);
+    $filters[] = "difficulty = '$difficulty'";
 }
 
-// 2. Fetch problems
-$sql = "SELECT id, title, difficulty, tags FROM problems ORDER BY id ASC";
-$result = $conn->query($sql);
+// Tag filter
+if (!empty($_GET['tag'])) {
+    $tag = $conn->real_escape_string($_GET['tag']);
+    $filters[] = "FIND_IN_SET('$tag', tags)";
+}
+
+// Combine filters
+if (!empty($filters)) {
+    $query .= " WHERE " . implode(" AND ", $filters);
+}
+
+$query .= " ORDER BY id ASC";
+
+$result = $conn->query($query);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Problemset</title>
-    <link rel="stylesheet" href="style.css"> <!-- Reusing your style.css -->
-    <style>
-        /* Extra styling for the problem list */
-        .problem-table {
-            width: 90%;
-            margin: 50px auto;
-            border-collapse: collapse;
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .problem-table th, .problem-table td {
-            padding: 15px 20px;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-        }
-        .problem-table th {
-            background-color: #4a90e2;
-            color: #fff;
-        }
-        .problem-title {
-            color: #2c3e50;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .problem-title:hover {
-            color: #4a90e2;
-        }
-    </style>
+    <link rel="stylesheet" href="problemset.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
+
 <body>
+    <div class="page-container">
+        <?php include('navbar.php'); ?>
+        <div class="container">
 
-        
-<h2 style="margin-top: 20px;">Problemset</h2>
+            <!-- Search & Filter -->
+            <form class="search-filter" method="get">
+                <input type="text" name="difficulty" placeholder="Search by difficulty (e.g. Easy)" value="<?php echo isset($_GET['difficulty']) ? htmlspecialchars($_GET['difficulty']) : ''; ?>">
+                <button type="submit">Search</button>
+            </form>
 
-<table class="problem-table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Difficulty</th>
-            <th>Tags</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if ($result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['id']); ?></td>
-                    <td>
-                        <a class="problem-title" href="view_problem.php?id=<?php echo $row['id']; ?>">
-                            <?php echo htmlspecialchars($row['title']); ?>
-                        </a>
-                    </td>
-                    <td><?php echo htmlspecialchars($row['difficulty']); ?></td>
-                    <td><?php echo htmlspecialchars($row['tags']); ?></td>
-                </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="4">No problems found.</td>
-            </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
+            <!-- Tag Filter Buttons -->
+            <div class="tag-buttons">
+                <a href="problemset.php?tag=math">Math</a>
+                <a href="problemset.php?tag=greedy">Greedy</a>
+                <a href="problemset.php?tag=dp">DP</a>
+                <a href="problemset.php?tag=implementation">Implementation</a>
+                <!-- Add more tags as needed -->
+            </div>
 
-<?php $conn->close(); ?>
+            <!-- Problemls list Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Tags</th>
+                        <th>Difficulty</th>
+                        <th>Solve Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($result && $result->num_rows > 0): ?>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <tr>
+                                <td><?php echo $row['id']; ?></td>
+                                <td><a class="title-link" href="view_problem.php?id=<?php echo $row['id']; ?>"><?php echo htmlspecialchars($row['title']); ?></a></td>
+                                <td><?php echo htmlspecialchars($row['tags']); ?></td>
+                                <td><?php echo htmlspecialchars($row['difficulty']); ?></td>
+                                <td><?php echo $row['solve_count']; ?></td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5">No problems found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+
+
 
 </body>
+
 </html>
+
+<?php $conn->close(); ?>

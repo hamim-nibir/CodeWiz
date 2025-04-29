@@ -1,0 +1,109 @@
+.main-container {
+    display: flex;
+    margin-top: 100px;
+    padding: 0 5%;
+    gap: 30px;
+}
+
+.left-pane {
+    width: 75%;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.left-pane h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 5px;
+    color: #34495e;
+}
+
+pre {
+    background-color: #f6f8fa;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.right-pane {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.side-nav {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.side-nav a {
+    display: block;
+    padding: 10px;
+    color: #2c3e50;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.side-nav a:hover {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.submit-box {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.submit-box select,
+.submit-box textarea,
+.submit-box input[type="file"],
+.submit-box button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.submit-box textarea {
+    height: 150px;
+    resize: vertical;
+    padding: 10px;
+}
+
+.submit-box button {
+    background-color: #4a90e2;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.submit-box button:hover {
+    background-color: #3b78c2;
+}
+
+.tag-buttons {
+    background-color: #ecf0f1;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.tag-buttons span {
+    display: inline-block;
+    background-color: #dfe6e9;
+    padding: 5px 10px;
+    margin: 5px 3px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #2c3e50;
+}
